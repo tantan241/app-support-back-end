@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'apps.files.apps.FilesConfig',
     'apps.categories.apps.CategoriesConfig',
     'apps.users.apps.UsersConfig',
+    'apps.list_article.apps.ListArticleConfig',
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',

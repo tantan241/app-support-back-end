@@ -17,13 +17,13 @@ class ListCodeUpdateView(APIView):
                 {"field": "stt", "headerName": "STT",
                     "sortable": False,  "flex": 0.2, "filterable": False},
                 {"field": "cart_type", "headerName": "Cart Type", "sortable": False,
-                    "filterable": False, "flex": 1},
+                    "filterable": False, "flex": 0.8},
                 {"field": "method", "headerName": "Phương Thức",
-                    "filterable": False, "flex": 1, "sortable": False},
+                    "filterable": False, "flex": 0.8, "sortable": False},
                 {"field": "entity_type", "headerName": "Loại thực thể",
-                    "filterable": False, "flex": 1, "sortable": False},
+                    "filterable": False, "flex": 0.8, "sortable": False},
                 {"field": "field", "headerName": "Tên trường",
-                    "filterable": False, "flex": 1, "sortable": False},
+                    "filterable": False, "flex": 0.8, "sortable": False},
                 {"field": "description", "headerName": "Mô tả",
                     "filterable": False, "flex": 2, "sortable": False},
             ]
@@ -40,10 +40,10 @@ class ListCodeUpdateView(APIView):
         if filter.get('method'):
             q &= Q(method = filter['method'])
         if filter.get('field'):
-            q &= Q(method = filter['field'].lower())
+            q &= Q(field__contains = filter['field'].lower())
         if filter.get('keywords'):
             q &= Q(keywords__contains = filter['keywords'].lower())
-        if filter.get('type'):
+        if filter.get('type') :
             q &= Q(type = filter['type'])
         if filter.get('user') and filter.get('user') !="all":
             user= User.objects.get(username=filter['user'])
@@ -58,8 +58,10 @@ class ListCodeUpdateView(APIView):
         for item in data.data:
             item["stt"] = index
             index += 1
+        total_rows = CodeUpdate.objects.filter(q).count()
+        print(total_rows)
         return Response({"status":1,
-                         "data": {"columns": columns,"rows": data.data},
+                         "data": {"columns": columns,"rows": data.data , "total_rows": total_rows},
                          "messenger": "Lấy dữ liệu thành công"},status=status.HTTP_200_OK)
     def delete(self,request):
         user = request.user

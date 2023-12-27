@@ -36,7 +36,7 @@ class UploadFileView(APIView):
                     for chunk in f.chunks():
                         file.write(chunk)
                 engine = create_engine('mysql+pymysql://{user}:{pw}@localhost/{db}'.format(user='root', pw='tanvip01%40', db='csvtofile'))
-                df = pd.read_csv(f"media/{f.name}", encoding='ISO-8859-1', delimiter=',', low_memory=False)
+                df = pd.read_csv(f"media/{f.name}", encoding='ISO-8859-1', delimiter=';', low_memory=False)
                 columns = df.columns.tolist()
                 df.index += 1
                 df.to_sql((f.name).replace('.csv', '').lower(), con=engine, if_exists='replace', index=True)
@@ -65,8 +65,11 @@ class UploadFileView(APIView):
             for file in csv_files:
                 file_stat = os.stat(file)
                 file_modified_time = datetime.datetime.fromtimestamp(file_stat.st_mtime)
+                
+                
                 if file_modified_time >= recent_day:
-                    list_files.append(os.path.basename(file))
+                    file_size = os.path.getsize(file)
+                    list_files.append({"path": os.path.basename(file),"size": file_size})
             return Response({'status': 1,
                              'messenger': 'Lấy danh sách file CSV thành công',
                              'data': list_files})
